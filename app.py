@@ -5,6 +5,7 @@ from flask import jsonify,request,Flask
 app = Flask(__name__)
 def uri():
     url = os.getenv('mongo')
+    print(f"la url es: {url}")
     return url
 try:
   
