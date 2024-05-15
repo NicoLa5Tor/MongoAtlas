@@ -13,7 +13,7 @@ try:
   
 # return a friendly error if a URI error is thrown 
 except pymongo.errors.ConfigurationError:
-  print("An Invalid URI host error was received. Is your Atlas host name correct in your connection string?")
+  print("error al crear el cliente")
   sys.exit(1)
 #api
 """
@@ -175,7 +175,7 @@ def delete():
                 
                 return jsonify({
                     "response" : f"El item {_id} fue eliminado con exito"
-                }),201
+                }),200
 
             else:
                 return jsonify({
@@ -190,7 +190,7 @@ def delete():
         return jsonify({
             "error" : "ocurrio algo al tratar de eliminar el item",
             "message" : str(e)
-        }),400
+        }),500
 @app.route('/get_item',methods=['GET'])
 def get_item():
     data = request.get_json()
@@ -231,8 +231,8 @@ def get_item():
         return jsonify({
             "error" : "Acurrio algo al tratar de acceder a el item especifico",
             "message" : str(e)
-        }),400
-@app.route('/list_items')
+        }),500
+@app.route('/list_items',methods=['GET'])
 def list_items():
     data = request.get_json()
     name_db = data.get('name_db')
