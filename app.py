@@ -156,8 +156,7 @@ def update_item():
     if not name_db or not collection or not item or not _id:
             return jsonify({
                 "error" : "Debe enviar todos los datos necesarios",
-                "message" : "los datos necesarios son: name_db,name_collection,item,_id",
-                "note": "El _id es mejor que sea como el nombre de tu item, que este engloble una funcion especifica"
+                "message" : "los datos necesarios son: name_db,name_collection,item,_id"
             }),400
     if verify_database(name_db=name_db):
             db = client[name_db]
@@ -180,7 +179,7 @@ def update_item():
                         }),404
                
                 return jsonify({
-                    "error" : f"No hay registros que actualizar del item: {item}"
+                    "error" : f"No hay registros que actualizar en un item llmado: {item}"
                 }),404
 
             else:
