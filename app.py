@@ -1,6 +1,7 @@
 import pymongo
 import os,sys,json
 from flask import jsonify,request,Flask
+from bson.objectid import ObjectId
 
 app = Flask(__name__)
 def uri():
@@ -145,7 +146,52 @@ def add_item():
             "message": str(e)
 
         }),500
-    
+@app.route('/update_item',methods=['PUT'])
+def update_item():
+    data = request.get_json()
+    name_db = data.get('name_db')
+    collection = data.get('name_collection')
+    _id = data.get('_id')
+    item = data.get('item')
+    if not name_db or not collection or not item or not _id:
+            return jsonify({
+                "error" : "Debe enviar todos los datos necesarios",
+                "message" : "los datos necesarios son: name_db,name_collection,item,_id",
+                "note": "El _id es mejor que sea como el nombre de tu item, que este engloble una funcion especifica"
+            }),400
+    if verify_database(name_db=name_db):
+            db = client[name_db]
+            listCollections = db.list_collection_names()
+            if collection in listCollections:
+                col = db[collection]
+                if search_id(id=_id,collection=col):
+                    result = col.find_one_and_update(
+                        {'_id': _id},
+                        {"$set" : {"item":item}},
+                        return_document=True
+                    )
+                    if result:
+                        return jsonify({
+                            "response" : f"El id {_id} fue actualizado con exito"
+                        }),200
+                    else:
+                        return jsonify({
+                            "error" : "Error al tratar de actualizar datos"
+                        }),404
+               
+                return jsonify({
+                    "error" : f"No hay registros que actualizar del item: {item}"
+                }),404
+
+            else:
+                return jsonify({
+                    "error" : f"La coleccion {collection} no existe dentro de la base de datos {name_db}"
+                }),400
+
+    else:
+            return jsonify({
+                "error" : f"La base de datos {name_db} mo existe"
+            }),400
 @app.route('/delete_item',methods=['DELETE'])
 def delete():
     data = request.get_json()
@@ -281,7 +327,6 @@ def list_items():
             "error":"Ocurrio algo al tratar de acceder a los items"
             ,"message":str(e)
         }),500
-
 
 #fuctions
 def convert_to_boolean(dat):
